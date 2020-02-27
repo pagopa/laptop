@@ -104,15 +104,6 @@ tap_is_installed() {
   brew tap | grep -Fqx "$1"
 }
 
-gem_install_or_update() {
-  if gem list "$1" | grep "^$1 ("; then
-    fancy_echo "Updating %s ..." "$1"
-    gem update "$@"
-  else
-    fancy_echo "Installing %s ..." "$1"
-    gem install "$@"
-  fi
-}
 
 app_is_installed() {
   local app_name
@@ -120,15 +111,7 @@ app_is_installed() {
   find /Applications -iname "$app_name*" -maxdepth 1 | grep -E '.app' > /dev/null
 }
 
-latest_installed_ruby() {
-  find "$HOME/.rubies" -maxdepth 1 -name 'ruby-*' | tail -n1 | grep -E -o '\d+\.\d+\.\d+'
-}
 
-switch_to_latest_ruby() {
-  # shellcheck disable=SC1091
-  . /usr/local/share/chruby/chruby.sh
-  chruby "ruby-$(latest_installed_ruby)"
-}
 
 append_to_file "$shell_file" "alias laptop='bash <(curl -s https://raw.githubusercontent.com/monfresh/laptop/master/laptop)'"
 
@@ -179,99 +162,83 @@ fi
 # shellcheck disable=SC2016
 append_to_file "$shell_file" 'eval "$(hub alias -s)"'
 
-append_to_file "$HOME/.gemrc" 'gem: --no-document'
 
-if command -v rbenv >/dev/null || command -v rvm >/dev/null; then
-  fancy_echo 'We recommend chruby and ruby-install over RVM or rbenv'
-else
-  if ! brew_is_installed "chruby"; then
-    fancy_echo 'Installing chruby, ruby-install, and the latest Ruby...'
 
-    brew bundle --file=- <<EOF
-    brew 'chruby'
-    brew 'ruby-install'
-EOF
+#
+# VSCODE SETUP 
+#
 
-    append_to_file "$shell_file" 'source /usr/local/share/chruby/chruby.sh'
-    append_to_file "$shell_file" 'source /usr/local/share/chruby/auto.sh'
-
-    ruby-install ruby
-
-    append_to_file "$shell_file" "chruby ruby-$(latest_installed_ruby)"
-
-    switch_to_latest_ruby
-  else
-    brew bundle --file=- <<EOF
-    brew 'chruby'
-    brew 'ruby-install'
-EOF
-    fancy_echo 'Checking if a newer version of Ruby is available...'
-    switch_to_latest_ruby
-
-    ruby-install --latest > /dev/null
-    latest_stable_ruby="$(cat < "$HOME/.cache/ruby-install/ruby/stable.txt" | tail -n1)"
-
-    if ! [ "$latest_stable_ruby" = "$(latest_installed_ruby)" ]; then
-      fancy_echo "Installing latest stable Ruby version: $latest_stable_ruby"
-      ruby-install ruby
-    else
-      fancy_echo 'You have the latest version of Ruby'
-    fi
-  fi
-fi
-
-fancy_echo 'Updating Rubygems...'
-gem update --system
-
-gem_install_or_update 'bundler'
-
-fancy_echo "Configuring Bundler ..."
-number_of_cores=$(sysctl -n hw.ncpu)
-bundle config --global jobs $((number_of_cores - 1))
-
-fancy_echo '...Finished Ruby installation checks.'
-
-no_prompt_customizations_in_shell_file() {
-  ! grep -qs -e "PS1=" -e "precmd" -e "PROMPT=" "$shell_file"
+# settings
+vscode_settings_file="~/Library/Application Support/Code/User/settings.json"
+cat > $vscode_settings_file <<- EOM
+{
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "'Jetbrains Mono', Menlo, Monaco, 'Courier New', monospace",
+  "workbench.iconTheme": "vscode-icons",
+  "window.zoomLevel": 0,
+  "workbench.editor.enablePreview": false,
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "java.configuration.checkProjectSettingsExclusions": false,
+  "sync.gist": "7592a86456ef667729182a4ddedcde1e",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.minimap.enabled": false
 }
+EOM
 
-no_zsh_frameworks() {
-  [ ! -d "$HOME/.oh-my-zsh" ] && [ ! -d "$HOME/.zpresto" ] && [ ! -d "$HOME/.zim" ] && [ ! -d "$HOME/.zplug" ]
-}
+# cli
+vscode_cli_url="https://raw.githubusercontent.com/microsoft/vscode/master/resources/darwin/bin/code.sh"
+vscode_cli_file="/usr/bin/code"
+curl $vscode_cli_url > $vscode_cli_file
 
-if [ -z "$CI" ] && no_zsh_frameworks && no_prompt_customizations_in_shell_file; then
-  echo -n "Would you like to customize your prompt to display the current directory and ruby version? [y/n]: "
-  read -r -n 1 response
-  if [ "$response" = "y" ]; then
-    if ! grep -qs "prompt_ruby_info()" "$shell_file"; then
-      cat <<EOT >> "$shell_file"
+# plugins
+code --install-extension eamodio.gitlens
+code --install-extension esbenp.prettier-vscode
+code --install-extension ms-python.python
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension vscode-icons-team.vscode-icons
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension ms-vscode.vscode-typescript-tslint-plugin
+code --install-extension VisualStudioExptTeam.vscodeintellicode
+code --install-extension ms-vsliveshare.vsliveshare
+code --install-extension formulahendry.terminal
 
-  prompt_ruby_info() {
-    echo $(ruby -v | grep -o 'ruby [^\( ]*')
-  }
-EOT
-    fi
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'GREEN=$(tput setaf 65)'
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'ORANGE=$(tput setaf 166)'
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'NORMAL=$(tput sgr0)'
-    # display pwd in orange, current ruby version in green,
-    # and set prompt character to $
-    # shellcheck disable=SC2016
-    if [ "$shell_file" = "$HOME/.bash_profile" ]; then
-      append_to_file "$shell_file" 'export PS1="${ORANGE}[\w] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ "'
-    else
-      append_to_file "$shell_file" 'precmd () { PS1="${ORANGE}[%~] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ " }'
-    fi
-    # display directories and files in different colors when running ls
-    append_to_file "$shell_file" 'export CLICOLOR=1;'
-    append_to_file "$shell_file" 'export LSCOLORS=exfxcxdxbxegedabagacad;'
-  else
-    fancy_echo "Skipping prompt customization."
-  fi
-fi
+
+#
+# NODENV
+#
+
+# init
+eval "$(nodenv init -)"
+
+# nodenv patch
+echo "eval \"\$(nodenv init -)\"" >> .zshrc
+
+# nodenv yarn 
+mkdir -p "$(nodenv root)/plugins"
+$ git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
+
+
+#
+# SHELL
+#
+
+# oh-my-sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# spaceship
+git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
+ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+sed -i "" "/ZSH_THEME=*/ZSC_THEME=\"spaceship\"/g" .zshrc
+
 
 if [ -f "$HOME/.laptop.local" ]; then
   # shellcheck source=/dev/null

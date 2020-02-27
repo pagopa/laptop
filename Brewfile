@@ -1,16 +1,17 @@
 cask_args appdir: '/Applications'
 
 brew 'git'
-
-tap 'heroku/brew'
-brew 'heroku'
-
-tap 'homebrew/services'
-brew 'postgresql'
-
 brew 'hub'
 
-cask 'phantomjs'
-cask 'flux'
-cask 'github'
 cask 'sublime-text'
+cask 'visual-studio-code'
+cask 'nodenv'
+cask 'docker'
+cask 'google-chrome'
+cask 'slack'
+cask 'zoomus'
+cask 'jq'
+cask 'postman'
+
+tap 'homebrew/cask-fonts'
+cask 'font-jetbrains-mono'
