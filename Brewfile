@@ -12,6 +12,7 @@ cask 'slack'
 cask 'zoomus'
 cask 'jq'
 cask 'postman'
+cask 'keepassxc'
 
 tap 'homebrew/cask-fonts'
 cask 'font-jetbrains-mono'
