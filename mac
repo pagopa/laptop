@@ -121,6 +121,8 @@ if ! command -v git >/dev/null; then
   fancy_echo "Installing Command Line Tools ..."
   fancy_echo "(check the dialog)"
   xcode-select --install
+else
+  fancy_echo "Command Line Tools already installed. Skipping ..."
 fi
 
 if ! command -v brew >/dev/null; then
