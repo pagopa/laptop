@@ -2,6 +2,7 @@ cask_args appdir: '/Applications'
 
 brew 'git'
 brew 'hub'
+brew 'shellcheck'
 
 cask 'sublime-text'
 cask 'visual-studio-code'
