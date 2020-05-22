@@ -177,7 +177,7 @@ append_to_file "$shell_file" 'eval "$(hub alias -s)"'
 
 # settings
 vscode_settings_file="~/Library/Application Support/Code/User/settings.json"
-cat > $vscode_settings_file <<- EOM
+cat > "$vscode_settings_file" <<- EOM
 {
   "editor.formatOnSave": true,
   "[typescript]": {
