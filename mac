@@ -113,10 +113,15 @@ app_is_installed() {
 
 
 
-append_to_file "$shell_file" "alias laptop='bash <(curl -s https://raw.githubusercontent.com/monfresh/laptop/master/laptop)'"
-
 # shellcheck disable=SC2016
 append_to_file "$shell_file" 'export PATH="$HOME/.bin:$PATH"'
+
+# check if dev tools are installed by checking if git is present
+if ! command -v git >/dev/null; then
+  fancy_echo "Installing Command Line Tools ..."
+  fancy_echo "(check the dialog)"
+  xcode-select --install
+fi
 
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew ..."
@@ -210,6 +215,7 @@ code --install-extension ms-vscode.vscode-typescript-tslint-plugin
 code --install-extension VisualStudioExptTeam.vscodeintellicode
 code --install-extension ms-vsliveshare.vsliveshare
 code --install-extension formulahendry.terminal
+code --install-extension timonwong.shellcheck
 
 
 #
