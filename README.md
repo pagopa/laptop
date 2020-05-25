@@ -1,5 +1,3 @@
-⚠️ UNDER DEVELOPMENT, DO NOT USE ⚠️
-
 Laptop
 ======
 Laptop is a script to set up a macOS computer for web development, and to keep
@@ -27,38 +25,32 @@ Supported operating systems:
 Older versions may work but aren't regularly tested. Bug reports for older
 versions are welcome.
 
-What's inside
--------
-It installs [Homebrew](https://brew.sh/) first, then it adds several common use applications. Please see `Brefile` for details.
-
-It also configures zsh with [oh-my-sh](https://github.com/ohmyzsh/ohmyzsh) and [spaceship](https://github.com/denysdovhan/spaceship-prompt) theme.  
-
-Install
+What it does
 -------
 
-Begin by opening the Terminal application on your Mac. The easiest way to open
-an application in macOS is to search for it via [Spotlight]. The default
-keyboard shortcut for invoking Spotlight is `command-Space`. Once Spotlight
-is up, just start typing the first few letters of the app you are looking for,
-and once it appears, press `return` to launch it.
+* Configure OSX command line tools, if not present
+* Install and configure Homebrew, if not present
+* Install several applications via Homebrew, including `Visual Studio Code` (Please see `Brefile` for details)
+* Configure Visual Studio Code by installing plugins and setting up `code` command if not present
+* Install [oh-my-sh](https://github.com/ohmyzsh/ohmyzsh) and [spaceship](https://github.com/denysdovhan/spaceship-prompt) theme.
 
-In your Terminal window, copy and paste the command below, then press `return`.
+How to use
+-------
+
+Open the terminal and execute the following command:
 
 ```sh
 bash <(curl -s https://raw.githubusercontent.com/balanza/laptop/master/laptop)
 ```
 
-The [script](https://github.com/balanza/laptop/blob/master/mac) itself is
-available in this repo for you to review if you want to see what it does
-and how it works.
-
-Note that the script will ask you to enter your macOS password at various
-points. This is the same password that you use to log in to your Mac.
-If you don't already have it installed, GitHub for Mac will launch
-automatically at the end of the script so you can set up everything you'll
-need to push code to GitHub.
-
 **Once the script is done, quit and relaunch Terminal.**
+
+Things I'd like to include in the future
+-------
+* configure OSX trackpad and gestures settings
+* setup ssh keys 
+* ensure idempotency (that is: you can run the same script on a non-blank system to restpre setup)
+* let users decide what to install and what don't
 
 
 Credits
