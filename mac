@@ -175,9 +175,34 @@ append_to_file "$shell_file" 'eval "$(hub alias -s)"'
 # VSCODE SETUP 
 #
 
+# cli
+if ! command -v code >/dev/null; then
+  fancy_echo "Installing Code CLI ..."
+  vscode_cli_url="https://raw.githubusercontent.com/microsoft/vscode/master/resources/darwin/bin/code.sh"
+  vscode_cli_file="/usr/local/bin/code"
+  curl $vscode_cli_url > $vscode_cli_file
+else
+  fancy_echo " Code CLI already installed. Skipping ..."
+fi
+
+# plugins
+code --install-extension eamodio.gitlens
+code --install-extension esbenp.prettier-vscode
+code --install-extension ms-python.python
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension vscode-icons-team.vscode-icons
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension ms-vscode.vscode-typescript-tslint-plugin
+code --install-extension VisualStudioExptTeam.vscodeintellicode
+code --install-extension ms-vsliveshare.vsliveshare
+code --install-extension formulahendry.terminal
+code --install-extension timonwong.shellcheck
+
 # settings
-vscode_settings_file="~/Library/Application\ Support/Code/User/settings.json"
-cat > "~/Library/Application\ Support/Code/User/settings.json" <<- EOM
+mkdir -p ~/Library/Application\ Support/Code/User/
+touch ~/Library/Application\ Support/Code/User/settings.json
+cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
 {
   "editor.formatOnSave": true,
   "[typescript]": {
@@ -199,25 +224,6 @@ cat > "~/Library/Application\ Support/Code/User/settings.json" <<- EOM
   "editor.minimap.enabled": false
 }
 EOM
-
-# cli
-vscode_cli_url="https://raw.githubusercontent.com/microsoft/vscode/master/resources/darwin/bin/code.sh"
-vscode_cli_file="/usr/bin/code"
-curl $vscode_cli_url > $vscode_cli_file
-
-# plugins
-code --install-extension eamodio.gitlens
-code --install-extension esbenp.prettier-vscode
-code --install-extension ms-python.python
-code --install-extension ms-azuretools.vscode-docker
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension vscode-icons-team.vscode-icons
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension ms-vscode.vscode-typescript-tslint-plugin
-code --install-extension VisualStudioExptTeam.vscodeintellicode
-code --install-extension ms-vsliveshare.vsliveshare
-code --install-extension formulahendry.terminal
-code --install-extension timonwong.shellcheck
 
 
 #
