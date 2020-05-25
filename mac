@@ -121,6 +121,7 @@ if ! command -v git >/dev/null; then
   fancy_echo "Installing Command Line Tools ..."
   fancy_echo "(check the dialog)"
   xcode-select --install
+  fancy_echo "Command Line Tools installed."
 else
   fancy_echo "Command Line Tools already installed. Skipping ..."
 fi
@@ -132,9 +133,12 @@ if ! command -v brew >/dev/null; then
 
     # shellcheck disable=SC2016
     append_to_file "$shell_file" 'export PATH="/usr/local/bin:$PATH"'
+    fancy_echo "Homebrew installed."
 else
   fancy_echo "Homebrew already installed. Skipping ..."
 fi
+
+fancy_echo "Configuring Homebrew..."
 
 # Remove brew-cask since it is now installed as part of brew tap caskroom/cask.
 # See https://github.com/caskroom/homebrew-cask/releases/tag/v0.60.0
@@ -166,14 +170,14 @@ else
   echo "in which case, you can ignore these errors."
 fi
 
-# shellcheck disable=SC2016
-append_to_file "$shell_file" 'eval "$(hub alias -s)"'
+fancy_echo "Homebrew configured."
 
 
 
 #
 # VSCODE SETUP 
 #
+fancy_echo "Configuring Visual Studio Code..."
 
 # cli
 if ! command -v code >/dev/null; then
@@ -182,7 +186,7 @@ if ! command -v code >/dev/null; then
   vscode_cli_file="/usr/local/bin/code"
   curl $vscode_cli_url > $vscode_cli_file
 else
-  fancy_echo " Code CLI already installed. Skipping ..."
+  fancy_echo "Code CLI already installed. Skipping ..."
 fi
 
 # plugins
@@ -224,36 +228,46 @@ cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
   "editor.minimap.enabled": false
 }
 EOM
-
+fancy_echo "Visual Studio Code configured."
 
 #
 # NODENV
 #
 
 # init
-eval "$(nodenv init -)"
+fancy_echo "Configuring nodenv..."
+eval "nodenv init -"
 
 # nodenv patch
+fancy_echo "patching nodenv init into .zshrc file"
 echo "eval \"\$(nodenv init -)\"" >> .zshrc
 
 # nodenv yarn 
+fancy_echo "patching yarn with nodenv"
 mkdir -p "$(nodenv root)/plugins"
-$ git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
-
+git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
+fancy_echo "nodenv configured."
 
 #
 # SHELL
 #
 
-# oh-my-sh
+fancy_echo "Configuring OH-MY-ZSH..."
+
+# oh-my-zsh
+fancy_echo "Installing omyzsh..."
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # spaceship
+fancy_echo "Installing spaceship..."
 git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 sed -i "" "/ZSH_THEME=*/ZSC_THEME=\"spaceship\"/g" .zshrc
 
+fancy_echo "OH-MY-ZSH configured."
 
+
+# save laptop.local command 
 if [ -f "$HOME/.laptop.local" ]; then
   # shellcheck source=/dev/null
   . "$HOME/.laptop.local"
