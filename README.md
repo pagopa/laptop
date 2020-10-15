@@ -45,7 +45,7 @@ bash <(curl -s https://raw.githubusercontent.com/pagopa/developer-laptop/master/
 
 **Once the script is done, quit and relaunch Terminal.**
 
-Things I'd like to include in the future
+Things We'd like to include in the future
 -------
 * configure OSX trackpad and gestures settings
 * setup ssh keys 
@@ -63,7 +63,7 @@ This laptop script is inspired by
 
 thoughtbot's original work remains covered under an [MIT License](https://github.com/thoughtbot/laptop/blob/c997c4fb5a986b22d6c53214d8f219600a4561ee/LICENSE).
 
-My work on this project is in the worldwide [public domain](LICENSE.md), as are contributions to my project. As stated in [CONTRIBUTING](CONTRIBUTING.md):
+Our work on this project is in the worldwide [public domain](LICENSE.md), as are contributions to our project. As stated in [CONTRIBUTING](CONTRIBUTING.md):
 
 > This project is in the public domain within the United States, and copyright and related rights in the work worldwide are waived through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 >
