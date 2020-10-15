@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd ~
-repo="balanza/laptop"
+repo="pagopa/developer-laptop"
 curl --remote-name "https://raw.githubusercontent.com/$repo/master/mac"
 curl --remote-name "https://raw.githubusercontent.com/$repo/master/Brewfile"
 /usr/bin/env bash mac 2>&1 | tee ~/laptop.log
