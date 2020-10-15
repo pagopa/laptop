@@ -1,9 +1,9 @@
-Laptop
+PagoPA Developer Laptop
 ======
-Laptop is a script to set up a macOS computer for web development, and to keep
+PagoPA Developer Laptop is a script to set up a macOS computer for development, and to keep
 it up to date. It's forked from the [original](https://github.com/thoughtbot/laptop).
 
-It's very opinionated on my taste and my needs as a web developer.
+It's very opinionated to our company needs in terms of stack and culture.
 
 It can be run multiple times on the same machine safely. It installs,
 upgrades, or skips packages based on what is already installed on the machine.
@@ -40,7 +40,7 @@ How to use
 Open the terminal and execute the following command:
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/balanza/laptop/master/laptop)
+bash <(curl -s https://raw.githubusercontent.com/pagopa/developer-laptop/master/laptop)
 ```
 
 **Once the script is done, quit and relaunch Terminal.**
