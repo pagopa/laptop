@@ -4,14 +4,6 @@
 # Be prepared to turn your laptop (or desktop)
 # into an awesome development machine.
 
-
-#--------
-# Variables
-
-export NODENV_VERSION=10.14.1
-
-#--------
-
 fancy_echo() {
   local fmt="$1"; shift
 
@@ -256,13 +248,6 @@ mkdir -p "$(nodenv root)/plugins"
 git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
 fancy_echo "nodenv configured."
 
-#install node version
-fancy_echo "Installing node version $NODENV_VERSION"
-
-nodenv install $NODENV_VERSION -s
-echo $NODENV_VERSION >.node-version
-
-
 #
 # SHELL
 #
@@ -276,7 +261,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # spaceship
 fancy_echo "Installing spaceship..."
 git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH/themes/spaceship.zsh-theme"
+ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 sed -i "" "/ZSH_THEME=*/ZSH_THEME=\"spaceship\"/g" .zshrc
 
 fancy_echo "OH-MY-ZSH configured."
