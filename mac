@@ -112,7 +112,6 @@ app_is_installed() {
 }
 
 
-
 # shellcheck disable=SC2016
 append_to_file "$shell_file" 'export PATH="$HOME/.bin:$PATH"'
 
@@ -243,9 +242,18 @@ fancy_echo "patching nodenv init into .zshrc file"
 echo "eval \"\$(nodenv init -)\"" >> .zshrc
 
 # nodenv yarn 
+NODENV_ROOT_PLUGIN="$(nodenv root)/plugins"
+YARN_ROOT="$NODENV_ROOT_PLUGIN/nodenv-yarn-install"
+
 fancy_echo "patching yarn with nodenv"
-mkdir -p "$(nodenv root)/plugins"
-git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
+
+if [ ! -d "$YARN_ROOT" ]; then
+  mkdir -p "$NODENV_ROOT_PLUGIN"
+  git clone https://github.com/pine/nodenv-yarn-install.git "$YARN_ROOT"
+else
+  git -C "$YARN_ROOT" pull
+fi
+
 fancy_echo "nodenv configured."
 
 #
@@ -254,15 +262,29 @@ fancy_echo "nodenv configured."
 
 fancy_echo "Configuring OH-MY-ZSH..."
 
+
 # oh-my-zsh
 fancy_echo "Installing omyzsh..."
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+if [ ! -d "$ZSH" ]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else 
+  ZSH_CUSTOM="$ZSH/custom"
+fi
+
 
 # spaceship
+SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
+
 fancy_echo "Installing spaceship..."
-git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-sed -i "" "/ZSH_THEME=*/ZSH_THEME=\"spaceship\"/g" .zshrc
+
+if [ ! -d "$SPACESHIP_ROOT" ]; then
+  git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP_ROOT"
+  ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+  sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" .zshrc
+else
+  git -C "$SPACESHIP_ROOT" pull
+fi
 
 fancy_echo "OH-MY-ZSH configured."
 
