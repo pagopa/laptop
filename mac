@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Welcome to the monfresh laptop script!
 # Be prepared to turn your laptop (or desktop)
@@ -266,10 +266,11 @@ fancy_echo "Configuring OH-MY-ZSH..."
 # oh-my-zsh
 fancy_echo "Installing omyzsh..."
 
+#if ZSH is already installed, skip install process and load variables
 if [ ! -d "$ZSH" ]; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else 
-  ZSH_CUSTOM="$ZSH/custom"
+  source ~/.zshrc
 fi
 
 
