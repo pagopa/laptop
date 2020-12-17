@@ -282,7 +282,7 @@ fancy_echo "Installing spaceship..."
 if [ ! -d "$SPACESHIP_ROOT" ]; then
   git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP_ROOT"
   ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-  sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" .zshrc
+  sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
 else
   git -C "$SPACESHIP_ROOT" pull
 fi
