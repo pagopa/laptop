@@ -189,23 +189,28 @@ else
 fi
 
 # plugins
-code --install-extension eamodio.gitlens
-code --install-extension esbenp.prettier-vscode
-code --install-extension ms-python.python
-code --install-extension ms-azuretools.vscode-docker
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension vscode-icons-team.vscode-icons
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension ms-vscode.vscode-typescript-tslint-plugin
-code --install-extension VisualStudioExptTeam.vscodeintellicode
-code --install-extension ms-vsliveshare.vsliveshare
-code --install-extension formulahendry.terminal
-code --install-extension timonwong.shellcheck
+code --install-extension eamodio.gitlens --force
+code --install-extension esbenp.prettier-vscode --force
+code --install-extension ms-python.python --force
+code --install-extension ms-azuretools.vscode-docker --force
+code --install-extension dbaeumer.vscode-eslint --force
+code --install-extension vscode-icons-team.vscode-icons --force
+code --install-extension dbaeumer.vscode-eslint --force
+code --install-extension ms-vscode.vscode-typescript-tslint-plugin --force
+code --install-extension VisualStudioExptTeam.vscodeintellicode --force
+code --install-extension ms-vsliveshare.vsliveshare --force
+code --install-extension formulahendry.terminal --force
+code --install-extension timonwong.shellcheck --force
 
 # settings
-mkdir -p ~/Library/Application\ Support/Code/User/
-touch ~/Library/Application\ Support/Code/User/settings.json
-cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
+
+if [ ! -f ~/Library/Application\ Support/Code/User/settings.json ]; then
+
+  fancy_echo "Creating Visual Studio Code User settings."
+
+  mkdir -p ~/Library/Application\ Support/Code/User/
+  touch ~/Library/Application\ Support/Code/User/settings.json
+  cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
 {
   "editor.formatOnSave": true,
   "[typescript]": {
@@ -227,6 +232,11 @@ cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
   "editor.minimap.enabled": false
 }
 EOM
+
+else
+ fancy_echo "Visual Studio Code User settings already configured."
+fi
+
 fancy_echo "Visual Studio Code configured."
 
 #
