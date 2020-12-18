@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # Welcome to the monfresh laptop script!
 # Be prepared to turn your laptop (or desktop)
@@ -204,6 +204,7 @@ code --install-extension timonwong.shellcheck --force
 
 # settings
 
+#create Visual Studio Code user settings json file, if not present
 if [ ! -f ~/Library/Application\ Support/Code/User/settings.json ]; then
 
   fancy_echo "Creating Visual Studio Code User settings."
@@ -288,20 +289,26 @@ fi
 
 # spaceship
 
-SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
+if [ "$ZSH_CUSTOM" ] && [ -d "$ZSH_CUSTOM" ]; then
 
-if [ ! -d "$SPACESHIP_ROOT" ]; then
-  fancy_echo "Installing spaceship..."
-  git clone https://github.com/denysdovhan/spaceship-prompt.git $ZSH_CUSTOM/themes/spaceship-prompt
-  ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-  fancy_echo "Setting spaceship as default theme..."
-  sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
+  SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
+
+  if [ ! -d "$SPACESHIP_ROOT" ]; then
+    fancy_echo "Installing spaceship..."
+    git clone https://github.com/denysdovhan/spaceship-prompt.git $ZSH_CUSTOM/themes/spaceship-prompt
+    ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+    fancy_echo "Setting spaceship as default theme..."
+    sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
+  else
+    fancy_echo "Updating spaceship..."
+    git -C "$SPACESHIP_ROOT" pull
+  fi
+
+  fancy_echo "OH-MY-ZSH configured."
+
 else
-  fancy_echo "Updating spaceship..."
-  git -C "$SPACESHIP_ROOT" pull
+  fancy_echo "ZSH_CUSTOM not found or unexisting folder! spaceship installation skipped."
 fi
-
-fancy_echo "OH-MY-ZSH configured."
 
 
 # save laptop.local command 

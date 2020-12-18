@@ -25,6 +25,8 @@ Supported operating systems:
 Older versions may work but aren't regularly tested. Bug reports for older
 versions are welcome.
 
+NOTE: For updates, we assume that ZSH_CUSTOM folder is at $ZSH/custom
+
 What it does
 -------
 
@@ -32,6 +34,7 @@ What it does
 * Install and configure Homebrew, if not present
 * Install several applications via Homebrew, including `Visual Studio Code` (Please see `Brefile` for details)
 * Configure Visual Studio Code by installing plugins and setting up `code` command if not present
+* Create basic Visual Studio Code user settings, if not present
 * Install [oh-my-sh](https://github.com/ohmyzsh/ohmyzsh) and [spaceship](https://github.com/denysdovhan/spaceship-prompt) theme.
 
 How to use
