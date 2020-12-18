@@ -247,9 +247,10 @@ fancy_echo "Visual Studio Code configured."
 fancy_echo "Configuring nodenv..."
 eval "nodenv init -"
 
-# nodenv patch
+# add nodenv initialization to the shell file, if not already present
 fancy_echo "patching nodenv init into .zshrc file"
-echo "eval \"\$(nodenv init -)\"" >> .zshrc
+nodenv_init="eval \"\$(nodenv init -)\""
+cat "$HOME/.zshrc" | grep "$nodenv_init" > /dev/null || echo "$nodenv_init" >> "$HOME/.zshrc"
 
 # nodenv yarn 
 NODENV_ROOT_PLUGIN="$(nodenv root)/plugins"
@@ -289,13 +290,15 @@ fi
 # spaceship
 SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
 
-fancy_echo "Installing spaceship..."
 
 if [ ! -d "$SPACESHIP_ROOT" ]; then
-  git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP_ROOT"
+  fancy_echo "Installing spaceship..."
+  git clone https://github.com/denysdovhan/spaceship-prompt.git /Users/emanuele/.oh-my-zsh/custom/themes/spaceship-prompt
   ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+  fancy_echo "Setting spaceship as default theme..."
   sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
 else
+  fancy_echo "Updating spaceship..."
   git -C "$SPACESHIP_ROOT" pull
 fi
 
