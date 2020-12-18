@@ -161,7 +161,7 @@ else
 fi
 
 fancy_echo "Installing formulas and casks from the Brewfile ..."
-if brew bundle --file="./Brewfile"; then
+if brew bundle --file="$HOME/Brewfile"; then
   fancy_echo "All formulas and casks were installed successfully."
 else
   fancy_echo "Some formulas or casks failed to install."
@@ -273,7 +273,6 @@ fancy_echo "nodenv configured."
 
 fancy_echo "Configuring OH-MY-ZSH..."
 
-
 # oh-my-zsh
 
 #if ZSH is already installed, skip install process and load variables
@@ -281,19 +280,19 @@ if [ ! -d "$ZSH" ]; then
   fancy_echo "Installing omyzsh..."
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else 
-  fancy_echo "Loading omyzsh variables."
-  source "$HOME/.zshrc" || fancy_echo "Error loading ohmyzsh variables"
-  fancy_echo "omyzsh variables loaded."
+  fancy_echo "Setting omyzsh variables."
+  #we assume that ZSH_CUSTOM is in path $ZSH/custom
+  ZSH_CUSTOM=$ZSH/custom
 fi
 
 
 # spaceship
-SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
 
+SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
 
 if [ ! -d "$SPACESHIP_ROOT" ]; then
   fancy_echo "Installing spaceship..."
-  git clone https://github.com/denysdovhan/spaceship-prompt.git /Users/emanuele/.oh-my-zsh/custom/themes/spaceship-prompt
+  git clone https://github.com/denysdovhan/spaceship-prompt.git $ZSH_CUSTOM/themes/spaceship-prompt
   ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
   fancy_echo "Setting spaceship as default theme..."
   sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
