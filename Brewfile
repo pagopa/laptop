@@ -20,4 +20,4 @@ cask 'font-jetbrains-mono'
 
 tap 'azure/functions'                    
 brew 'azure-functions-core-tools@3'
-cask dotnet-sdk
+cask 'dotnet-sdk'

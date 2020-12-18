@@ -112,7 +112,6 @@ app_is_installed() {
 }
 
 
-
 # shellcheck disable=SC2016
 append_to_file "$shell_file" 'export PATH="$HOME/.bin:$PATH"'
 
@@ -190,23 +189,29 @@ else
 fi
 
 # plugins
-code --install-extension eamodio.gitlens
-code --install-extension esbenp.prettier-vscode
-code --install-extension ms-python.python
-code --install-extension ms-azuretools.vscode-docker
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension vscode-icons-team.vscode-icons
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension ms-vscode.vscode-typescript-tslint-plugin
-code --install-extension VisualStudioExptTeam.vscodeintellicode
-code --install-extension ms-vsliveshare.vsliveshare
-code --install-extension formulahendry.terminal
-code --install-extension timonwong.shellcheck
+code --install-extension eamodio.gitlens --force
+code --install-extension esbenp.prettier-vscode --force
+code --install-extension ms-python.python --force
+code --install-extension ms-azuretools.vscode-docker --force
+code --install-extension dbaeumer.vscode-eslint --force
+code --install-extension vscode-icons-team.vscode-icons --force
+code --install-extension dbaeumer.vscode-eslint --force
+code --install-extension ms-vscode.vscode-typescript-tslint-plugin --force
+code --install-extension VisualStudioExptTeam.vscodeintellicode --force
+code --install-extension ms-vsliveshare.vsliveshare --force
+code --install-extension formulahendry.terminal --force
+code --install-extension timonwong.shellcheck --force
 
 # settings
-mkdir -p ~/Library/Application\ Support/Code/User/
-touch ~/Library/Application\ Support/Code/User/settings.json
-cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
+
+#create Visual Studio Code user settings json file, if not present
+if [ ! -f ~/Library/Application\ Support/Code/User/settings.json ]; then
+
+  fancy_echo "Creating Visual Studio Code User settings."
+
+  mkdir -p ~/Library/Application\ Support/Code/User/
+  touch ~/Library/Application\ Support/Code/User/settings.json
+  cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
 {
   "editor.formatOnSave": true,
   "[typescript]": {
@@ -228,6 +233,11 @@ cat > ~/Library/Application\ Support/Code/User/settings.json <<- EOM
   "editor.minimap.enabled": false
 }
 EOM
+
+else
+ fancy_echo "Visual Studio Code User settings already configured."
+fi
+
 fancy_echo "Visual Studio Code configured."
 
 #
@@ -238,14 +248,24 @@ fancy_echo "Visual Studio Code configured."
 fancy_echo "Configuring nodenv..."
 eval "nodenv init -"
 
-# nodenv patch
+# add nodenv initialization to the shell file, if not already present
 fancy_echo "patching nodenv init into .zshrc file"
-echo "eval \"\$(nodenv init -)\"" >> .zshrc
+nodenv_init="eval \"\$(nodenv init -)\""
+cat "$HOME/.zshrc" | grep "$nodenv_init" > /dev/null || echo "$nodenv_init" >> "$HOME/.zshrc"
 
 # nodenv yarn 
+NODENV_ROOT_PLUGIN="$(nodenv root)/plugins"
+YARN_ROOT="$NODENV_ROOT_PLUGIN/nodenv-yarn-install"
+
 fancy_echo "patching yarn with nodenv"
-mkdir -p "$(nodenv root)/plugins"
-git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
+
+if [ ! -d "$YARN_ROOT" ]; then
+  mkdir -p "$NODENV_ROOT_PLUGIN"
+  git clone https://github.com/pine/nodenv-yarn-install.git "$YARN_ROOT"
+else
+  git -C "$YARN_ROOT" pull
+fi
+
 fancy_echo "nodenv configured."
 
 #
@@ -255,16 +275,40 @@ fancy_echo "nodenv configured."
 fancy_echo "Configuring OH-MY-ZSH..."
 
 # oh-my-zsh
-fancy_echo "Installing omyzsh..."
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+#if ZSH is already installed, skip install process and load variables
+if [ ! -d "$ZSH" ]; then
+  fancy_echo "Installing omyzsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else 
+  fancy_echo "Setting omyzsh variables."
+  #we assume that ZSH_CUSTOM is in path $ZSH/custom
+  ZSH_CUSTOM=$ZSH/custom
+fi
+
 
 # spaceship
-fancy_echo "Installing spaceship..."
-git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-sed -i "" "/ZSH_THEME=*/ZSC_THEME=\"spaceship\"/g" .zshrc
 
-fancy_echo "OH-MY-ZSH configured."
+if [ "$ZSH_CUSTOM" ] && [ -d "$ZSH_CUSTOM" ]; then
+
+  SPACESHIP_ROOT="$ZSH_CUSTOM/themes/spaceship-prompt"
+
+  if [ ! -d "$SPACESHIP_ROOT" ]; then
+    fancy_echo "Installing spaceship..."
+    git clone https://github.com/denysdovhan/spaceship-prompt.git $ZSH_CUSTOM/themes/spaceship-prompt
+    ln -s "$SPACESHIP_ROOT/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+    fancy_echo "Setting spaceship as default theme..."
+    sed -i "" "s/^ZSH_THEME=.*/ZSH_THEME=\"spaceship\"/g" "$HOME/.zshrc"
+  else
+    fancy_echo "Updating spaceship..."
+    git -C "$SPACESHIP_ROOT" pull
+  fi
+
+  fancy_echo "OH-MY-ZSH configured."
+
+else
+  fancy_echo "ZSH_CUSTOM not found or unexisting folder! spaceship installation skipped."
+fi
 
 
 # save laptop.local command 
