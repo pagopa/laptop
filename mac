@@ -28,6 +28,14 @@ create_zshrc_and_set_it_as_shell_file() {
   shell_file="$HOME/.zshrc"
 }
 
+create_zprofile_and_set_as_zprofile_file(){
+  if [ ! -f "$HOME/.zprofile" ]; then
+    touch "$HOME/.zprofile"
+  fi
+
+  zprofile_file="$HOME/.zprofile"
+}
+
 create_bash_profile_and_set_it_as_shell_file() {
   if [ ! -f "$HOME/.bash_profile" ]; then
     touch "$HOME/.bash_profile"
@@ -41,6 +49,7 @@ change_shell_to_zsh() {
   echo "Note that there won't be visual feedback when you type your password."
   echo "Type it slowly and press return, or press control-c to cancel the switch to zsh and exit the script."
   create_zshrc_and_set_it_as_shell_file
+  create_zprofile_and_set_as_zprofile_file
   chsh -s "$(command -v zsh)"
   echo "Note that you can always switch back to ${bold}bash${normal} if you change your mind."
   echo "The instructions for changing shells manually are available in the README."
@@ -127,12 +136,21 @@ fi
 
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew ..."
-    curl -fsS \
-      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
 
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'export PATH="/usr/local/bin:$PATH"'
-    fancy_echo "Homebrew installed."
+  create_zprofile_and_set_as_zprofile_file
+
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+  # - Run these two commands in your terminal to add Homebrew to your PATH:
+  # (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/<HOME>/.zprofile
+  # eval "$(/opt/homebrew/bin/brew shellenv)"
+
+  # shellcheck disable=SC2016
+  append_to_file "$shell_file" 'export PATH="/usr/local/bin:$PATH"'
+  append_to_file "$zprofile_file" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+
+  fancy_echo "Homebrew installed."
 else
   fancy_echo "Homebrew already installed. Skipping ..."
 fi
